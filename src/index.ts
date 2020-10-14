@@ -223,7 +223,7 @@ app.listen(process.env.PORT, () => {
 });
 
 function typeCheck(obj: any, target: Record<string, any>): boolean {
-	if (Object.keys(obj) !== Object.keys(target)) return false;
+	// if (Object.keys(obj) !== Object.keys(target)) return false;
 
 	for (const [key, value] of Object.entries(target)) {
 		console.log('Expecting:', key, 'of', obj, 'to be', value);

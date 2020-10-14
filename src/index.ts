@@ -218,8 +218,8 @@ app.all('/boards/:board/posts/:id/replies/:reply', (req, res) => {
 
 app.all('*', (_, res) => res.status(404).send({ error: { message: 'not found' }, data: null }));
 
-app.listen(3000, () => {
-	console.log('Listening on port:', 3000);
+app.listen(process.env.PORT, () => {
+	console.log('Listening on port:', process.env.PORT);
 });
 
 function typeCheck(obj: any, target: Record<string, any>): boolean {

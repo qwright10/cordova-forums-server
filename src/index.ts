@@ -12,7 +12,7 @@ const postTypes = {
 
 void createConnection({
 	type: 'postgres',
-	url: 'postgres://wksfmntt:2vqFG4yknemUnrVTvuIuLMWr7ea2OOwy@lallah.db.elephantsql.com:5432/wksfmntt',
+	url: process.env.PG,
 	synchronize: true,
 	logging: true,
 	entities: [Post],

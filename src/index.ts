@@ -70,7 +70,7 @@ app.put('/boards/:board/posts', async (req, res) => {
 	if (guards.contentType(req, res)) return;
 	if (guards.malformedBody(req, res)) return;
 
-	const post = ((await Post.create({
+	const post = (Post.create({
 		...req.body,
 		board: req.params.board,
 		id: Snowflake.generate(),
@@ -78,7 +78,7 @@ app.put('/boards/:board/posts', async (req, res) => {
 		views: 0,
 		parent: null,
 		children: [],
-	})) as unknown) as Post;
+	}) as unknown) as Post;
 
 	await post.save();
 	return res
@@ -172,7 +172,7 @@ app.put('/boards/:board/posts/:id/replies', async (req, res) => {
 	if (!parent) return res.status(404).send({ error: { message: 'post not found' }, data: null });
 	if (parent.parent) return res.status(400).send({ error: { message: 'post is not a parent post' }, data: null });
 
-	const child = ((await Post.create({
+	const child = (Post.create({
 		...req.body,
 		board: req.params.board,
 		id: Snowflake.generate(),
@@ -180,7 +180,7 @@ app.put('/boards/:board/posts/:id/replies', async (req, res) => {
 		views: 0,
 		parent: parent.id,
 		children: null,
-	})) as unknown) as Post;
+	}) as unknown) as Post;
 
 	parent.children!.push(child.id);
 	await parent.save();

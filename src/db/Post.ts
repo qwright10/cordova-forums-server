@@ -49,6 +49,7 @@ export class Post extends BaseEntity {
 		if (post instanceof Post && post.parent !== null) return Promise.resolve(null);
 		return this.createQueryBuilder('post')
 			.where('post.parent = :id', { id: post instanceof Post ? post.id : post })
+			.orderBy('post.uid', 'DESC')
 			.getMany();
 	}
 

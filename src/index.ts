@@ -124,7 +124,15 @@ app.get('/boards/:board/posts/:id', async (req, res) => {
 
 	const id = req.params.id;
 	const post = await Post.findByID(id);
-	if (post) return res.status(200).send({ error: null, data: post });
+	if (post) {
+		await Post.createQueryBuilder('post')
+			.update()
+			.where('post.id = :id', { id })
+			.set({ views: () => 'views + 1' })
+			.execute()
+			.catch(console.error);
+		return res.status(200).send({ error: null, data: post });
+	}
 	return res.status(404).send({ error: { message: 'post not found' }, data: null });
 });
 

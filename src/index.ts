@@ -167,7 +167,21 @@ app.all('/boards/:board/posts/:id', (req, res) => {
 });
 
 app.options('/boards/:board/posts/:id/replies', (req, res) => {
-	res.status(204).header('Allow', 'OPTIONS, PUT').header('Access-Control-Allow-Methods', 'OPTIONS, PUT').end();
+	res
+		.status(204)
+		.header('Allow', 'OPTIONS, GET, PUT')
+		.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT')
+		.end();
+});
+
+app.get('/boards/:board/posts/:id/replies', async (req, res) => {
+	if (guards.boards(req, res)) return;
+	if (guards.idType(req, res)) return;
+
+	const id = req.params.id;
+	const children = await Post.fetchChildren(id);
+	if (!children) return res.status(404).send({ error: { message: 'parent not found' }, data: null });
+	return res.status(200).send({ error: null, data: children });
 });
 
 app.put('/boards/:board/posts/:id/replies', async (req, res) => {

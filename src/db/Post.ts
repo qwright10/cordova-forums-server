@@ -33,6 +33,7 @@ export class Post extends BaseEntity {
 	public static findByBoard(board: string): Promise<Post[]> {
 		return this.createQueryBuilder('post')
 			.where('post.board = :board', { board })
+			.andWhere('post.parent is null')
 			.orderBy('post.uid', 'DESC')
 			.getMany();
 	}

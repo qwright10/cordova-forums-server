@@ -187,6 +187,8 @@ app.get('/boards/:board/posts/:id/replies', async (req, res) => {
 app.put('/boards/:board/posts/:id/replies', async (req, res) => {
 	if (guards.boards(req, res)) return;
 	if (guards.idType(req, res)) return;
+	if (guards.contentType(req, res)) return;
+	if (guards.body(req, res)) return;
 	if (guards.malformedBody(req, res)) return;
 
 	const id = req.params.id;

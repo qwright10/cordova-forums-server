@@ -88,7 +88,7 @@ app.put('/boards/:board/posts', async (req, res) => {
 	return res
 		.status(201)
 		.header('Content-Location', `/boards/${req.params.board}/posts/${post.id}`)
-		.send({ error: null, data: post.toJSON() });
+		.send({ error: null, data: post });
 });
 
 /**
@@ -215,7 +215,7 @@ app.put('/boards/:board/posts/:id/replies', async (req, res) => {
 	await parent.save();
 	await child.save();
 
-	return res.status(201).send({ error: null, data: parent.toJSON() }).end();
+	return res.status(201).send({ error: null, data: child }).end();
 });
 
 app.all('/boards/:board/posts/:id/replies', (req, res) => {

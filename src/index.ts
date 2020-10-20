@@ -79,6 +79,7 @@ app.put('/boards/:board/posts', async (req, res) => {
 		board: req.params.board,
 		id: Snowflake.generate(),
 		author: Snowflake.generate(),
+		subject: '',
 		views: 0,
 		parent: null,
 		children: [],

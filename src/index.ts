@@ -5,8 +5,12 @@ import { createConnection } from 'typeorm';
 import { Snowflake } from './Snowflake';
 const app = express();
 
-const postTypes = {
+const parentTypes = {
 	subject: 'string',
+	content: 'string',
+};
+
+const childTypes = {
 	content: 'string',
 };
 
@@ -68,7 +72,7 @@ app.put('/boards/:board/posts', async (req, res) => {
 	if (guards.boards(req, res)) return;
 	if (guards.body(req, res)) return;
 	if (guards.contentType(req, res)) return;
-	if (guards.malformedBody(req, res)) return;
+	if (guards.malformedBody(req, res, true)) return;
 
 	const post = (Post.create({
 		...req.body,
@@ -189,7 +193,7 @@ app.put('/boards/:board/posts/:id/replies', async (req, res) => {
 	if (guards.idType(req, res)) return;
 	if (guards.contentType(req, res)) return;
 	if (guards.body(req, res)) return;
-	if (guards.malformedBody(req, res)) return;
+	if (guards.malformedBody(req, res, false)) return;
 
 	const id = req.params.id;
 	const parent = await Post.findByID(id);
@@ -258,11 +262,8 @@ function typeCheck(obj: any, target: Record<string, any>): boolean {
 	return true;
 }
 
-const guards: Record<
-	'boards' | 'body' | 'contentType' | 'idType' | 'malformedBody',
-	(req: Request, res: Response, third?: any) => boolean
-> = {
-	boards(req, res) {
+const guards = {
+	boards(req: Request, res: Response) {
 		if (!['b', 's', 'g', 't'].includes(req.params.board)) {
 			res.status(404).send({ error: { message: 'unknown board' }, data: null });
 			return true;
@@ -271,7 +272,7 @@ const guards: Record<
 		return false;
 	},
 
-	body(req, res) {
+	body(req: Request, res: Response) {
 		if (!req.body) {
 			res.status(400).send({ error: { message: 'missing body' }, data: null });
 			return true;
@@ -280,7 +281,7 @@ const guards: Record<
 		return false;
 	},
 
-	contentType(req, res) {
+	contentType(req: Request, res: Response) {
 		if (!req.headers['content-type']?.match(/^application\/json/i)) {
 			res.status(415).send({ error: { message: 'request must contain "content-type" header' }, data: null });
 			return true;
@@ -289,7 +290,7 @@ const guards: Record<
 		return false;
 	},
 
-	idType(req, res, id?: string) {
+	idType(req: Request, res: Response, id?: string) {
 		if (isNaN(id ?? (req.params.id as any))) {
 			res.status(400).send({ error: { message: 'expected id to be bigint string' }, data: null });
 			return true;
@@ -298,8 +299,8 @@ const guards: Record<
 		return false;
 	},
 
-	malformedBody(req, res) {
-		if (!typeCheck(req.body, postTypes)) {
+	malformedBody(req: Request, res: Response, parent: boolean) {
+		if (!typeCheck(req.body, parent ? parentTypes : childTypes)) {
 			res.status(400).send({ error: { message: 'malformed body' }, data: null });
 			return true;
 		}
